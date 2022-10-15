@@ -60,16 +60,19 @@ var Quiet = (function() {
     };
 
     function initAudioContext() {
+
+    };
+
+    document.documentElement.addEventListener('mousedown', () => {
         if (audioCtx === undefined) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-    };
+        if (audioCtx.state === 'suspended')
+            audioCtx.resume();
+    });
 
     function resumeAudioContext() {
-        document.documentElement.addEventListener('mousedown', () => {
-            if (audioCtx.state === 'suspended')
-                audioCtx.resume();
-        });
+
     };
 
     function fail(reason) {
@@ -906,11 +909,10 @@ var Quiet = (function() {
      * @returns {ArrayBuffer} buf - converted arraybuffer
      */
     function str2ab(s) {
-        var s_utf8 = unescape(encodeURIComponent(s));
-        var buf = new ArrayBuffer(s_utf8.length);
+        var buf = new ArrayBuffer(s.length/8);
         var bufView = new Uint8Array(buf);
-        for (var i = 0; i < s_utf8.length; i++) {
-            bufView[i] = s_utf8.charCodeAt(i);
+        for (var i = 0; i < s.length; i+=8) {
+            bufView[i/8] = (s[i]=='1')*0b10000000 + (s[i+1]=='1')*0b01000000 + (s[i+2]=='1')*0b00100000 + (s[i+3]=='1')*0b00010000 + (s[i+4]=='1')*0b00001000 + (s[i+5]=='1')*0b00000100 + (s[i+6]=='1')*0b00000010 + (s[i+7]=='1')*0b00000001;
         }
         return buf;
     };
@@ -923,7 +925,22 @@ var Quiet = (function() {
      * @returns {string} s - converted string
      */
     function ab2str(ab) {
-        return decodeURIComponent(escape(String.fromCharCode.apply(null, new Uint8Array(ab))));
+        var bufView = new Uint8Array(ab);
+        var s = '';
+        for (var i = 0; i < bufView.length; i++) {
+            int = bufView[i];
+            if(int&0b10000000) s+='1'; else s+='0';
+            if(int&0b01000000) s+='1'; else s+='0';
+            if(int&0b00100000) s+='1'; else s+='0';
+            if(int&0b00010000) s+='1'; else s+='0';
+            if(int&0b00001000) s+='1'; else s+='0';
+            if(int&0b00000100) s+='1'; else s+='0';
+            if(int&0b00000010) s+='1'; else s+='0';
+            if(int&0b00000001) s+='1'; else s+='0';
+        }
+
+        return s;
+        // return decodeURIComponent(escape(String.fromCharCode.apply(null, new Uint8Array(ab))));
     };
 
     /**

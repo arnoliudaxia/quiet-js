@@ -25,7 +25,7 @@
             "filter_bank_size": 64
         }
     },
-    "audible-7k-channel-0": {
+    "audible-high": {
       "mod_scheme": "arb16opt",
       "checksum_scheme": "crc32",
       "inner_fec_scheme": "v29",
