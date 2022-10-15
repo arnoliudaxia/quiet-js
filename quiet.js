@@ -66,9 +66,10 @@ var Quiet = (function() {
     };
 
     function resumeAudioContext() {
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+        document.documentElement.addEventListener('mousedown', () => {
+            if (audioCtx.state === 'suspended')
+                audioCtx.resume();
+        });
     };
 
     function fail(reason) {
